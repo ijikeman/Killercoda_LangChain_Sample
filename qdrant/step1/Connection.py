@@ -10,8 +10,11 @@ client = QdrantClient("localhost", port=6333)
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # コレクションの作成
-collection_name = "my_collection"
-client.recreate_collection(
+collection_name = "test_collection"
+if (collection_exists := client.check_collection_exists(collection_name)):
+    client.delete_collection(collection_name=collection_name)
+
+client.create_collection(
     collection_name=collection_name,
     vectors_config=VectorParams(size=384, distance=Distance.COSINE),
 )
@@ -28,3 +31,11 @@ points = [
 client.upsert(collection_name=collection_name, points=points)
 
 print("Data inserted successfully.")
+
+# Qdrant に登録済みのデータを取得
+def list_qdrant_data(collection_name):
+    points = client.scroll(collection_name=collection_name, limit=10)[0]  # 最初の10件
+    for p in points:
+        print(f"ID: {p.id}, Text: {p.payload['text']}")
+
+list_qdrant_data(collection_name)
