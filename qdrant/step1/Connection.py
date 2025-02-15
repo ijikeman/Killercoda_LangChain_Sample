@@ -11,7 +11,7 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # コレクションの作成
 collection_name = "test_collection"
-if (collection_exists := client.check_collection_exists(collection_name)):
+if client.collection_exists(collection_name):
     client.delete_collection(collection_name=collection_name)
 
 client.create_collection(
